@@ -1,6 +1,30 @@
 // ============================================================
-// Lead Engine System — Shared Types
+// Mikai Platform — Shared Types
 // ============================================================
+
+// ── Modules & Plans ──────────────────────────────────────────
+
+export type ModuleType =
+  | 'lead_capture'
+  | 'bookings'
+  | 'payments'
+  | 'invoicing'
+  | 'calendar'
+  | 'client_records'
+
+export type PlanType = 'starter' | 'growth' | 'pro'
+
+export const PLAN_MODULES: Record<PlanType, ModuleType[]> = {
+  starter: ['lead_capture'],
+  growth:  ['lead_capture', 'bookings', 'payments', 'client_records'],
+  pro:     ['lead_capture', 'bookings', 'payments', 'invoicing', 'calendar', 'client_records'],
+}
+
+export function hasModule(config: BusinessConfig, module: ModuleType): boolean {
+  return config.modules.includes(module)
+}
+
+// ── Field Config (dynamic forms) ─────────────────────────────
 
 export type FieldType =
   | 'text'
@@ -12,40 +36,76 @@ export type FieldType =
   | 'checkbox'
 
 export interface FieldConfig {
-  name: string         // key stored in lead.metadata
-  label: string        // display label on the form
+  name: string
+  label: string
   type: FieldType
   required?: boolean
   placeholder?: string
-  options?: string[]   // only for type: 'select'
+  options?: string[]
 }
+
+// ── Business Config ───────────────────────────────────────────
 
 export interface BusinessBranding {
   logoUrl?: string
-  primaryColor: string // hex e.g. '#1D4ED8'
+  primaryColor: string
+  secondaryColor?: string
   tagline?: string
 }
 
 export interface BusinessSettings {
   followUpHours: number
   fileUploadEnabled: boolean
-  fileAcceptTypes?: string  // e.g. '.pdf,.jpg,.png'
+  fileAcceptTypes?: string
   maxFileSizeMB: number
   replyToEmail: string
+  depositPercentage?: number       // e.g. 30 = 30% deposit
+  cancellationHours?: number       // hours before appointment for free cancellation
+  bookingBufferMinutes?: number    // gap between appointments
+}
+
+export interface ServiceConfig {
+  name: string
+  description?: string
+  durationMinutes: number
+  price: number
+  currency?: string                // defaults to ZAR
 }
 
 export interface BusinessConfig {
-  id: string           // matches businesses.id in Supabase
-  slug: string         // URL slug e.g. 'printco'
+  id: string
+  slug: string
   name: string
   ownerEmail: string
+  plan: PlanType
+  modules: ModuleType[]
   branding: BusinessBranding
   settings: BusinessSettings
-  services: string[]        // displayed in the service selector
-  customFields: FieldConfig[] // dynamic fields beyond the base set
+  services: ServiceConfig[]
+  customFields: FieldConfig[]
 }
 
-// ---- Lead ----
+// ── Website Content ───────────────────────────────────────────
+
+export type WebsiteSection =
+  | 'hero'
+  | 'services'
+  | 'gallery'
+  | 'testimonials'
+  | 'about'
+  | 'contact'
+  | 'faq'
+
+export interface WebsiteContent {
+  id: string
+  business_id: string
+  section: WebsiteSection
+  content: Record<string, unknown>
+  is_active: boolean
+  sort_order: number
+}
+
+// ── Lead ─────────────────────────────────────────────────────
 
 export type LeadStatus = 'new' | 'contacted' | 'quoted' | 'closed' | 'lost'
 
@@ -65,7 +125,77 @@ export interface Lead {
   updated_at: string
 }
 
-// ---- Message / interaction log ----
+// ── Client ───────────────────────────────────────────────────
+
+export interface Client {
+  id: string
+  business_id: string
+  name: string
+  email: string
+  phone?: string | null
+  notes?: string | null
+  created_at: string
+}
+
+// ── Booking ──────────────────────────────────────────────────
+
+export type BookingStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'cancelled'
+  | 'completed'
+  | 'no_show'
+
+export interface Booking {
+  id: string
+  business_id: string
+  client_id?: string | null
+  service_id?: string | null
+  service_name?: string | null
+  service_price?: number | null
+  service_duration_minutes?: number | null
+  date: string
+  start_time: string
+  end_time: string
+  status: BookingStatus
+  deposit_paid: boolean
+  deposit_amount?: number | null
+  notes?: string | null
+  created_at: string
+  updated_at: string
+}
+
+// ── Availability ─────────────────────────────────────────────
+
+export interface Availability {
+  id: string
+  business_id: string
+  day_of_week?: number | null
+  specific_date?: string | null
+  start_time: string
+  end_time: string
+  is_blocked: boolean
+}
+
+// ── Payment ──────────────────────────────────────────────────
+
+export type PaymentProvider = 'payfast' | 'stripe'
+export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded'
+
+export interface Payment {
+  id: string
+  business_id: string
+  booking_id?: string | null
+  amount: number
+  currency: string
+  provider: PaymentProvider
+  provider_payment_id?: string | null
+  status: PaymentStatus
+  metadata: Record<string, unknown>
+  created_at: string
+}
+
+// ── Message / activity log ────────────────────────────────────
 
 export type MessageType = 'email_sent' | 'note' | 'follow_up' | 'status_change'
 
@@ -80,7 +210,7 @@ export interface Message {
   created_at: string
 }
 
-// ---- Form submission payload ----
+// ── Form submission ───────────────────────────────────────────
 
 export interface LeadSubmissionInput {
   businessId: string
@@ -96,4 +226,5 @@ export interface LeadSubmissionInput {
 
 export interface ActionResult {
   error?: string
+  data?: Record<string, unknown>
 }

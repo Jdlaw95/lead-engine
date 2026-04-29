@@ -191,8 +191,8 @@ export function LeadForm({ business }: LeadFormProps) {
                 </SelectTrigger>
                 <SelectContent>
                   {business.services.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
+                    <SelectItem key={s.name} value={s.name}>
+                      {s.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

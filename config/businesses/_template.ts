@@ -12,6 +12,8 @@ export const templateConfig: BusinessConfig = {
   slug: 'your-slug',
   name: 'Business Name',
   ownerEmail: 'owner@business.com',
+  plan: 'starter',
+  modules: ['lead_capture'],
 
   branding: {
     logoUrl: '',            // publicly accessible image URL, or leave blank
@@ -28,9 +30,9 @@ export const templateConfig: BusinessConfig = {
   },
 
   services: [
-    'Service One',
-    'Service Two',
-    'Service Three',
+    { name: 'Service One', durationMinutes: 60, price: 0 },
+    { name: 'Service Two', durationMinutes: 60, price: 0 },
+    { name: 'Service Three', durationMinutes: 60, price: 0 },
   ],
 
   customFields: [

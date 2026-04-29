@@ -11,6 +11,8 @@ export const printcoConfig: BusinessConfig = {
   slug: 'printco',
   name: 'PrintCo Melbourne',
   ownerEmail: 'hello@printco.com.au',
+  plan: 'starter',
+  modules: ['lead_capture'],
 
   branding: {
     logoUrl: '',
@@ -27,13 +29,13 @@ export const printcoConfig: BusinessConfig = {
   },
 
   services: [
-    'Business Cards',
-    'Flyers & Brochures',
-    'Banners & Signage',
-    'Stationery',
-    'Packaging',
-    'Large Format Printing',
-    'Other',
+    { name: 'Business Cards',        durationMinutes: 0, price: 0 },
+    { name: 'Flyers & Brochures',    durationMinutes: 0, price: 0 },
+    { name: 'Banners & Signage',     durationMinutes: 0, price: 0 },
+    { name: 'Stationery',            durationMinutes: 0, price: 0 },
+    { name: 'Packaging',             durationMinutes: 0, price: 0 },
+    { name: 'Large Format Printing', durationMinutes: 0, price: 0 },
+    { name: 'Other',                 durationMinutes: 0, price: 0 },
   ],
 
   customFields: [
